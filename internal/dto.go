@@ -21,3 +21,9 @@ type UpdateResponse struct {
 	UserName       string
 	MembershipType string
 }
+
+type GetResponse struct {
+	ID             string
+	UserName       string
+	MembershipType string
+}
