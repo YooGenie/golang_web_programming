@@ -14,9 +14,24 @@ func NewController(service Service) *Controller {
 }
 
 func (controller *Controller) Create(c echo.Context) error {
-	return c.JSON(http.StatusOK, "hello world")
+	var req CreateRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid request format")
+	}
+
+	res, err := controller.service.Create(req)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (controller *Controller) GetByID(c echo.Context) error {
-	return c.JSON(http.StatusOK, "hello world")
+	id := c.Param("id")
+	res, err := controller.service.GetByID(id)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+	return c.JSON(http.StatusOK, res)
 }
