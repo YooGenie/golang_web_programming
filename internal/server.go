@@ -24,6 +24,12 @@ func NewDefaultServer() *Server {
 
 func (s *Server) Run() {
 	e := echo.New()
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "RequestHttpMethod=${method}\nRequestURI=${uri}\nResponseHttpStatusCode=${status}\n",
+	}))
+	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
+		fmt.Printf("RequestBody=%s \nResponseBody=%s", string(reqBody), string(resBody))
+	}))
 	e.GET("/", func(c echo.Context) error { return c.NoContent(http.StatusOK) })
 	s.Routes(e)
 	log.Fatal(e.Start(fmt.Sprintf(":%d", _defaultPort)))
