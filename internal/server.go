@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"log"
+	"net/http"
+	log "github.com/sirupsen/logrus"
 )
 
 const _defaultPort = 8080
@@ -28,7 +29,8 @@ func (s *Server) Run() {
 		Format: "RequestHttpMethod=${method}\nRequestURI=${uri}\nResponseHttpStatusCode=${status}\n",
 	}))
 	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
-		fmt.Printf("RequestBody=%s \nResponseBody=%s", string(reqBody), string(resBody))
+		log.Println("RequestBody="+ string(reqBody))
+		log.Println("ResponseBody="+  string(resBody))
 	}))
 	e.GET("/", func(c echo.Context) error { return c.NoContent(http.StatusOK) })
 	s.Routes(e)
