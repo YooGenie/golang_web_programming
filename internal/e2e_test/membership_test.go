@@ -51,4 +51,25 @@ func TestTossRecreate(t *testing.T) {
 			JSON().Object().
 			Value("message").Equal("재가입할 수 없습니다.")
 	})
+
+	t.Run("", func(t *testing.T) {
+		// given: - 멤버십을 발급 받는다.
+		membershipCreateRequest := e.POST("/v1/memberships").
+			WithJSON(internal.CreateRequest{
+				UserName:       "andy",
+				MembershipType: "toss",
+			}).
+			Expect().
+			Status(http.StatusCreated).
+			JSON().Object()
+
+		// when: 	멤버십을 조회했을 때, 발급한 정보가 나온다
+		e.GET(fmt.Sprintf("/v1/memberships/%s", membershipCreateRequest.Value("id").Raw())).
+			Expect().
+			Status(http.StatusOK).JSON().Equal(internal.GetResponse{
+			UserName:       "andy",
+			MembershipType: "toss",
+		})
+
+	})
 }
