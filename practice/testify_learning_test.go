@@ -3,7 +3,9 @@ package practice
 import (
 	"errors"
 	"github.com/google/uuid"
+
 	"github.com/stretchr/testify/assert"
+
 	"testing"
 )
 
@@ -42,13 +44,9 @@ func TestPractice(t *testing.T) {
 	})
 
 	t.Run("두 숫자를 나눗셈 할 수 있다.", func(t *testing.T) {
-		actual, err := divide(10, 2)
-
-		assert.Nil(t, err)
-		assert.Equal(t, 5, actual)
+		//actual, err := divide(10, 2)
 		//TODO err가 발생하지 않았음을 검증해주세요.
 		//TODO 결과로 나온 숫자가 5가 맞는지 검증해주세요.
-
 	})
 
 	t.Run("0으로 나누기를 할 수 없다.", func(t *testing.T) {
