@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"log"
 	"net/http"
 )
@@ -23,6 +24,13 @@ func NewDefaultServer() *Server {
 
 func (s *Server) Run() {
 	e := echo.New()
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "RequestHttpMethod=${method}\nRequestURI=${uri}\nResponseHttpStatusCode=${status}\n",
+	}))
+	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
+		log.Println("RequestBody="+ string(reqBody))
+		log.Println("ResponseBody="+  string(resBody))
+	}))
 	e.GET("/", func(c echo.Context) error { return c.NoContent(http.StatusOK) })
 	s.Routes(e)
 	log.Fatal(e.Start(fmt.Sprintf(":%d", _defaultPort)))
