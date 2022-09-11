@@ -22,13 +22,15 @@ func TestGolang(t *testing.T) {
 
 	t.Run("goroutine에서 slice에 값 추가해보기", func(t *testing.T) {
 		var numbers []int
-
+		var mutex sync.Mutex
 		var wg sync.WaitGroup
 		wg.Add(100)
 		for i := 0; i < 100; i++ {
 			go func(i int) {
 				// TODO numbers에 i 값을 추가해보세요.
+				mutex.Lock()
 				numbers = append(numbers, i)
+				mutex.Unlock()
 				wg.Done()
 			}(i)
 		}
@@ -111,7 +113,7 @@ func TestGolang(t *testing.T) {
 		ctx := context.Background()
 		ctx = context.WithValue(ctx, "name", "유지니")
 		// 추가된 key, value를 호출하여 assert로 값을 검증해보세요.
-		assert.EqualValues(t, "유지니", ctx.Value("name"))
+		assert.Equal(t, "유지니", ctx.Value("name"))
 		// 추가되지 않은 key에 대한 value를 assert로 검증해보세요.
 		assert.Nil(t, ctx.Value("age"))
 	})

@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -64,10 +65,8 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("수정하려는 사용자의 이름이 이미 존재하는 사용자 이름이라면 예외 처리한다.", func(t *testing.T) {
-		app := NewApplication(*NewRepository(map[string]Membership{
-			"data1": {"1", "jenny", "naver"},
-			"data2": {"1", "genie", "naver"}}))
-		req := UpdateRequest{"1", "genie", "naver"}
+		app := NewApplication(*NewRepository(map[string]Membership{"data": {uuid.New().String(), "genie", "naver"}}))
+		req := UpdateRequest{uuid.New().String(), "genie", "naver"}
 		res, err := app.Update(req)
 		assert.Empty(t, res)
 		assert.EqualError(t, err, "사용자의 이름이 이미 존재합니다")
