@@ -14,7 +14,7 @@ func NewService(repository Repository) *Service {
 
 func (s *Service) Create(request CreateRequest) (CreateResponse, error) {
 	membership := Membership{uuid.New().String(), request.UserName, request.MembershipType}
-	s.repository.Create(membership)
+	//s.repository.Create(membership)
 	return CreateResponse{
 		ID:             membership.ID,
 		MembershipType: membership.MembershipType,
