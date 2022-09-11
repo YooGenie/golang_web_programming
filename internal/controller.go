@@ -14,7 +14,7 @@ func NewController(service Service) *Controller {
 }
 
 func (controller *Controller) Create(c echo.Context) error {
-	var req CreateRequest
+	var req Request
 	if err := c.Bind(&req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid request format")
 	}

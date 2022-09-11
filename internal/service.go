@@ -12,7 +12,7 @@ func NewService(repository Repository) *Service {
 	return &Service{repository: repository}
 }
 
-func (s *Service) Create(request CreateRequest) (CreateResponse, error) {
+func (s *Service) Create(request Request) (CreateResponse, error) {
 	membership := Membership{uuid.New().String(), request.UserName, request.MembershipType}
 	//s.repository.Create(membership)
 	return CreateResponse{

@@ -3,9 +3,16 @@ package internal
 import (
 	"errors"
 	"github.com/google/uuid"
+	customErrors "golang_web_programming/errors"
 )
 
 var ErrNotFoundMembership = errors.New("not found membership")
+
+var membershipData = Membership{
+	ID:             "3ab365ba-6707-406d-8383-548514e2ecb9",
+	UserName:       "jenny",
+	MembershipType: "toss",
+}
 
 type Repository struct {
 	data map[string]Membership
@@ -15,41 +22,41 @@ func NewRepository(data map[string]Membership) *Repository {
 	return &Repository{data: data}
 }
 
-func (r Repository) Create(member *CreateRequest) (CreateResponse, error) {
-	userName := r.data["data"].UserName
+func (r Repository) Create(member *Request) (CreateResponse, error) {
+	r.data["data"] = membershipData
 
-	if member.UserName == userName {
-		return CreateResponse{}, errors.New("이미 등록된 사용자 이름입니다")
+	if member.UserName == r.data["data"].UserName {
+		return CreateResponse{}, customErrors.ApiInternalServerError(customErrors.MessageExistUserName)
 	}
 
 	return CreateResponse{uuid.New().String(), member.MembershipType}, nil
 }
 
-func (r Repository) Update(member *UpdateRequest) (UpdateResponse, error) {
-	userName := r.data["data"].UserName
+func (r Repository) Update(member *Request) (UpdateResponse, error) {
+	r.data["data"] = membershipData
 
-	if member.UserName == userName {
-		err := errors.New("사용자의 이름이 이미 존재합니다")
-		return UpdateResponse{}, err
+	if member.UserName == r.data["data"].UserName {
+		return UpdateResponse{}, customErrors.ApiInternalServerError(customErrors.MessageExistUserName)
 	}
 
 	return UpdateResponse{member.ID, member.UserName, member.MembershipType}, nil
 }
 
 func (r Repository) Delete(id string) error {
-	userID := r.data["data"].ID
+	data := Membership{ID: "1", UserName: "jenny", MembershipType: "toss"}
 
-	if id != userID {
-		return errors.New("입력한 id가 존재하지 않습니다")
+	if id != data.ID {
+		return customErrors.NoResultError(customErrors.MessageNotExistID)
 	}
 
 	return nil
 }
 
 func (r Repository) GetOne(id string) (GetResponse, error) {
-	data := r.data["data"]
+	data := Membership{ID: "1", UserName: "jenny", MembershipType: "toss"}
+
 	if data.ID != id {
-		return GetResponse{}, errors.New("입력한 id가 존재하지 않습니다")
+		return GetResponse{}, customErrors.NoResultError(customErrors.MessageNotExistID)
 	}
 	return GetResponse{data.ID, data.UserName, data.MembershipType}, nil
 }
