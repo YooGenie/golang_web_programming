@@ -3,7 +3,6 @@ package practice
 import (
 	"errors"
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
