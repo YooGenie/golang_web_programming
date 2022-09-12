@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"golang_web_programming/logo"
 	"log"
 	"net/http"
 )
@@ -11,15 +12,18 @@ import (
 const _defaultPort = 8080
 
 type Server struct {
-	controller Controller
+	logoController       logo.Controller
+	membershipController Controller
 }
 
 func NewDefaultServer() *Server {
 	data := map[string]Membership{}
-	service := NewService(*NewRepository(data))
-	controller := NewController(*service)
+	membershipRepository := NewRepository(data)
+	membershipService := NewService(*membershipRepository)
+	membershipController := NewController(*membershipService)
 	return &Server{
-		controller: *controller,
+		membershipController: *membershipController,
+		logoController:       *logo.NewController(),
 	}
 }
 
@@ -54,7 +58,8 @@ func (s *Server) Run() {
 
 func (s *Server) Routes(e *echo.Echo) {
 	g := e.Group("/v1")
-	RouteMemberships(g, s.controller)
+	RouteMemberships(g, s.membershipController)
+	RouteLogo(g, s.logoController)
 }
 
 func RouteMemberships(e *echo.Group, c Controller) {
@@ -65,4 +70,9 @@ func RouteMemberships(e *echo.Group, c Controller) {
 	//e.POST("/memberships", c.Create, middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 	//	TargetHeader: "X-My-Request-Header",
 	//}))
+}
+
+
+func RouteLogo(e *echo.Group, c logo.Controller) {
+	e.GET("/logo", c.Get)
 }
