@@ -2,7 +2,9 @@ package internal
 
 import (
 	"github.com/labstack/echo/v4"
+	customErrors "golang_web_programming/errors"
 	"net/http"
+	"strings"
 )
 
 type Controller struct {
@@ -14,24 +16,67 @@ func NewController(service Service) *Controller {
 }
 
 func (controller *Controller) Create(c echo.Context) error {
-	var req Request
-	if err := c.Bind(&req); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "invalid request format")
+	var request CreateRequest
+
+	if err := c.Bind(&request); err != nil {
+		return customErrors.ErrParamsBinding
 	}
 
-	res, err := controller.service.Create(req)
+	if err := ValidateCreateRequest(request); err != nil {
+		return err
+	}
+
+	createResponse, err := controller.service.Create(&request)
 	if err != nil {
-		return echo.ErrInternalServerError
+		return err
 	}
 
-	return c.JSON(http.StatusCreated, res)
+	return c.JSON(http.StatusCreated, createResponse)
+}
+
+func (controller *Controller) Update(c echo.Context) error {
+	var request UpdateRequest
+
+	id := c.Param("id")
+
+	if err := c.Bind(&request); err != nil {
+		return customErrors.ErrParamsBinding
+	}
+
+	request.ID = id
+
+	if err := ValidateUpdateRequest(request); err != nil {
+		return err
+	}
+
+	updateResponse, err := controller.service.Update(&request)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusCreated, updateResponse)
 }
 
 func (controller *Controller) GetByID(c echo.Context) error {
 	id := c.Param("id")
+
 	res, err := controller.service.GetByID(id)
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
 	return c.JSON(http.StatusOK, res)
+}
+
+func (controller *Controller) Delete(c echo.Context) error {
+	id := c.Param("id")
+
+	if strings.Trim(id, " ") == "" {
+		return customErrors.ErrInvalidUserID
+	}
+
+	if err := controller.service.Delete(id); err != nil {
+		return err
+	}
+
+	return nil
 }
