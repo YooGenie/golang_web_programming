@@ -1,39 +1,13 @@
 package errors
 
-import (
-	"net/http"
+import "errors"
 
-	"github.com/labstack/echo/v4"
+var (
+	ErrParamsBinding =  errors.New("파라미터 바인딩중 오류가 발생했습니다")
+	ErrNotExistID = errors.New("입력한 id가 존재하지 않습니다")
+	ErrExistUserName = errors.New("이미 등록된 사용자 이름입니다")
+	ErrInvalidUserID = errors.New("사용자 아이디가 유효하지 않습니다")
+	ErrInvalidMembershipType = errors.New("해당 멤버십 타입은 유효하지 않습니다")
+	ErrInputMembershipType = errors.New("멤버십 타입을 입력해주세요")
+	ErrInputUserName = errors.New("사용자 이름을 입력해주세요")
 )
-
-func StatusUnauthorized(message string) error {
-	return echo.NewHTTPError(http.StatusUnauthorized, message)
-}
-
-func StatusForbidden(message string) error {
-	return echo.NewHTTPError(http.StatusForbidden, message)
-}
-
-func ApiRequestTooBigError(message string) error {
-	return echo.NewHTTPError(http.StatusRequestEntityTooLarge, message)
-}
-
-func ApiInternalServerError(message string) error {
-	return echo.NewHTTPError(http.StatusInternalServerError, message)
-}
-
-func ApiNotAcceptableError(message string) error {
-	return echo.NewHTTPError(http.StatusNotAcceptable, message)
-}
-
-func ParamsValidationError(message string) error {
-	return echo.NewHTTPError(http.StatusBadRequest, message)
-}
-
-func NoResultError(message string) error {
-	return echo.NewHTTPError(http.StatusNotFound, message)
-}
-
-//func ApiParamValidError(err error) error {
-//	return new(http.StatusBadRequest, 90001, err.Error())
-//}

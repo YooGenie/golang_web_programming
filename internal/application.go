@@ -1,97 +1,79 @@
 package internal
 
 import (
-	"github.com/labstack/echo/v4"
-	customErrors "golang_web_programming/errors"
-	"net/http"
-	"strings"
+	"errors"
 )
 
 type Application struct {
-	repository Repository
+	service Service
 }
 
-func NewApplication(repository Repository) *Application {
-	return &Application{repository: repository}
+func NewApplication(service Service) *Application {
+	return &Application{service: service}
 }
 
-func (app *Application) Create(ctx echo.Context) error {
-	var request Request
-
-	if err := ctx.Bind(&request); err != nil {
-		return customErrors.ApiInternalServerError(customErrors.MessageParamsBinding)
-	}
-
-	if err := app.ValidateRequest(request); err != nil {
-		return err
-	}
-
-	createResponse, err := app.repository.Create(&request)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusCreated, createResponse)
-}
-
-func (app *Application) Update(ctx echo.Context) error {
-	var request Request
-
-	if err := ctx.Bind(&request); err != nil {
-		return customErrors.ApiInternalServerError(customErrors.MessageParamsBinding)
-	}
-
-	if request.ID == "" {
-		return customErrors.ParamsValidationError(customErrors.MessageInvalidUserID)
-	}
-
-	if err := app.ValidateRequest(request); err != nil {
-		return err
-	}
-
-	updateResponse, err := app.repository.Update(&request)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusCreated, updateResponse)
-}
-
-func (app *Application) Delete(ctx echo.Context) error {
-	id := ctx.Param("id")
-
-	if strings.Trim(id, " ") == "" {
-		return customErrors.ParamsValidationError(customErrors.MessageInvalidUserID)
-	}
-
-	if err := app.repository.Delete(id); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (app *Application) Get(ctx echo.Context) error {
-	id := ctx.Param("id")
-
-	getResponse, err := app.repository.GetOne(id)
-	if err != nil {
-		return err
-	}
-
-	return ctx.JSON(http.StatusOK, getResponse)
-}
-
-func (app *Application) ValidateRequest(request Request) error {
+func (app *Application) Create(request CreateRequest) (*CreateResponse, error) {
 	if request.UserName == "" {
-		return customErrors.ParamsValidationError(customErrors.MessageInputUserName)
+		return nil, errors.New("이름을 입력해주세요")
 	}
 	if request.MembershipType == "" {
-		return customErrors.ParamsValidationError(customErrors.MessageInputMembershipType)
+		return nil, errors.New("멤버십 타입을 입력해주세요")
 	}
 	if !(request.MembershipType == "naver" || request.MembershipType == "toss" || request.MembershipType == "payco") {
-		return customErrors.ParamsValidationError(customErrors.MessageInvalidMembershipType)
+		return nil, errors.New("해당 멤버십 타입은 유효하지 않습니다")
+	}
+
+	createResponse, err := app.service.Create(&request)
+	if err != nil {
+		return nil, err
+	}
+	return createResponse, nil
+}
+
+func (app *Application) Update(request UpdateRequest) (*UpdateResponse, error) {
+	if request.ID == "" {
+		err := errors.New("멤버십 아이디를 입력해주세요")
+		return nil, err
+	}
+	if request.UserName == "" {
+		err := errors.New("이름을 입력해주세요")
+		return nil, err
+	}
+	if request.MembershipType == "" {
+		err := errors.New("멤버십 타입을 입력해주세요")
+		return nil, err
+	}
+	if !(request.MembershipType == "naver" || request.MembershipType == "toss" || request.MembershipType == "payco") {
+		err := errors.New("해당 멤버십 타입은 유효하지 않습니다")
+		return nil, err
+	}
+	updateResponse, err := app.service.Update(&request)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return updateResponse, nil
+}
+
+func (app *Application) Delete(id string) error {
+	if id == "" {
+		return errors.New("삭제할 멤버십 아이디가 유효하지 않습니다")
+	}
+
+	if err := app.service.Delete(id); err != nil {
+		return err
 	}
 
 	return nil
+}
+
+func (app *Application) Get(id string) (*GetResponse, error) {
+
+	getResponse, err := app.service.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return getResponse, nil
 }
