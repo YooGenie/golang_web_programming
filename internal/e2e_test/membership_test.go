@@ -5,13 +5,14 @@ import (
 	"github.com/gavv/httpexpect"
 	"github.com/labstack/echo/v4"
 	"golang_web_programming/internal"
+	"golang_web_programming/server"
 	"net/http"
 	"testing"
 )
 
 func TestTossRecreate(t *testing.T) {
 	echoServer := echo.New()
-	internal.NewDefaultServer().Routes(echoServer)
+	server.NewDefaultServer().Routes(echoServer)
 
 	e := httpexpect.WithConfig(httpexpect.Config{
 		Client: &http.Client{

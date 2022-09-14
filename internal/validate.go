@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/labstack/echo/v4"
 	customErrors "golang_web_programming/errors"
 )
 
@@ -18,7 +19,7 @@ func ValidateCreateRequest(request CreateRequest) error {
 	return nil
 }
 
-func ValidateUpdateRequest(request UpdateRequest) error {
+func ValidateUpdateRequest(c echo.Context, request UpdateRequest) error {
 	if request.ID == "" {
 		return customErrors.ErrInvalidUserID
 	}
