@@ -43,7 +43,6 @@ func (s *Service) GetByID(id string) (*GetResponse, error) {
 		UserName:       membership.UserName,
 		MembershipType: membership.MembershipType,
 	}
-
 	return &response, nil
 }
 
