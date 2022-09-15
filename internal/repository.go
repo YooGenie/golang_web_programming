@@ -55,3 +55,10 @@ func (r *Repository) GetById(id string) (Membership, error) {
 	}
 	return r.data[id], nil
 }
+
+func (r *Repository) GetList() (map[string]Membership, error) {
+	r.data["3ab365ba-6707-406d-8383-548514e2ecb9"] = Membership{ID: "3ab365ba-6707-406d-8383-548514e2ecb9", UserName: "jenny", MembershipType: "toss"}
+	r.data["3ab365ba-6707-406d-8383-548514e2ecb5"] = Membership{ID: "3ab365ba-6707-406d-8383-548514e2ecb5", UserName: "jay", MembershipType: "naver"}
+
+	return r.data, nil
+}
