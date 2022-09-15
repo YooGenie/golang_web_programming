@@ -75,6 +75,7 @@ func RouteMemberships(e *echo.Group, c internal.Controller) {
 	e.POST("/memberships", c.Create)
 	e.PUT("/memberships/:id", c.Update,jwtMiddleware, customMiddleware.Middleware{}.ValidateMember)
 	e.GET("/memberships/:id", c.GetByID, jwtMiddleware)
+	e.GET("/memberships", c.GetList,jwtMiddleware, customMiddleware.Middleware{}.ValidateAdmin)
 	e.DELETE("/memberships/:id", c.Delete,jwtMiddleware, customMiddleware.Middleware{}.ValidateAdmin)
 	//e.POST("/memberships", c.Create, middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 	//	TargetHeader: "X-My-Request-Header",

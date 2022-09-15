@@ -37,7 +37,15 @@ func TestTossRecreate(t *testing.T) {
 			JSON().Object()
 
 		// when: 토스 멤버십을 삭제한다.
+		token := e.POST("/v1/login").
+			WithFormField("name", "admin").
+			WithFormField("password","admin").
+			Expect().
+			Status(http.StatusOK).
+			JSON().Object()
+
 		e.DELETE(fmt.Sprintf("/v1/memberships/%s", membershipCreateRequest.Value("id").Raw())).
+			WithHeader("authorization",fmt.Sprintf("bearer %s", token.Raw()["token"])).
 			Expect().
 			Status(http.StatusOK)
 
@@ -65,8 +73,16 @@ func TestTossRecreate(t *testing.T) {
 			JSON().Object()
 
 		// when: 	멤버십을 조회했을 때, 발급한 정보가 나온다
+		token := e.POST("/v1/login").
+			WithFormField("name", "andy").
+			WithFormField("password","andy").
+			Expect().
+			Status(http.StatusOK).
+			JSON().Object()
+
 		id := membershipCreateRequest.Value("id").Raw()
 		e.GET(fmt.Sprintf("/v1/memberships/%s", id)).
+			WithHeader("authorization",fmt.Sprintf("bearer %s", token.Value("token").Raw())).
 			Expect().
 			Status(http.StatusOK).JSON().Equal(internal.GetResponse{
 			ID:             id.(string),
@@ -74,4 +90,66 @@ func TestTossRecreate(t *testing.T) {
 			MembershipType: "toss",
 		})
 	})
+
+	t.Run("멤버십의 주인만 멤버십을 조회할 수 있다", func(t *testing.T) {
+		//Given: 멤버십을 생성한다
+		membershipCreateRequest := e.POST("/v1/memberships").
+			WithJSON(internal.CreateRequest{
+				UserName:       "andy",
+				MembershipType: "toss",
+			}).
+			Expect().
+			Status(http.StatusCreated).
+			JSON().Object()
+
+		id := membershipCreateRequest.Value("id").Raw()
+
+		// When: 멤버십을 생성한 사용자가 로그인한다.
+		token := e.POST("/v1/login").
+			WithFormField("name", "andy").
+			WithFormField("password","andy").
+			Expect().
+			Status(http.StatusOK).
+			JSON().Object()
+
+		// then: 사용자의 멤버십 단건 조회를 할 수 있다.
+		e.GET(fmt.Sprintf("/v1/memberships/%s",id)).
+			WithHeader("authorization",fmt.Sprintf("bearer %s", token.Value("token").Raw())).
+			Expect().
+			Status(http.StatusOK).
+			JSON().Object().Equal(internal.GetResponse{
+			ID:             id.(string),
+			UserName:       "andy",
+			MembershipType: "toss",
+		})
+	})
+
+	t.Run("Admin 사용자는 멤버십 전체 조회를 할 수 있다", func(t *testing.T) {
+		//Given: 생성된 멤버십이 존재한다
+		 e.POST("/v1/memberships").
+			WithJSON(internal.CreateRequest{
+				UserName:       "andy",
+				MembershipType: "toss",
+			}).
+			Expect().
+			Status(http.StatusCreated).
+			JSON().Object()
+
+		// When: Admin 사용자가 로그인한다
+		token := e.POST("/v1/login").
+			WithFormField("name", "admin").
+			WithFormField("password","admin").
+			Expect().
+			Status(http.StatusOK).
+			JSON().Object()
+
+		// then: 멤버십 전체 조회를 할 수 있다.
+		e.GET("/v1/memberships").
+			WithHeader("authorization",fmt.Sprintf("bearer %s", token.Raw()["token"])).
+			Expect().
+			Status(http.StatusOK).
+			JSON().Array()
+	})
 }
+
+

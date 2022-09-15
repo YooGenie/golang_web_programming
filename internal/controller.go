@@ -88,3 +88,16 @@ func (controller *Controller) Delete(c echo.Context) error {
 
 	return nil
 }
+
+func (controller *Controller) GetList(c echo.Context) error {
+
+	res, err := controller.service.GetList()
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+
+
+
+	return c.JSON(http.StatusOK, res)
+}
