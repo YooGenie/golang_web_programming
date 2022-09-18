@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 )
 
@@ -24,7 +23,7 @@ func (s *Service) Create(request *CreateRequest) (*CreateResponse, error) {
 
 func (s *Service) Update(request *UpdateRequest) (*UpdateResponse, error) {
 	membership := Membership{request.ID, request.UserName, request.MembershipType}
-	fmt.Println("membership, ", membership)
+
 	updateResponse, err := s.repository.Update(membership)
 	if err != nil {
 		return nil, err
@@ -42,6 +41,7 @@ func (s *Service) GetByID(id string) (*GetResponse, error) {
 		UserName:       membership.UserName,
 		MembershipType: membership.MembershipType,
 	}
+
 	return &response, nil
 }
 

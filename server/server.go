@@ -3,10 +3,9 @@ package server
 import (
 	"fmt"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"golang_web_programming/internal"
 	"golang_web_programming/logo"
-	customMiddleware "golang_web_programming/middleware"
+	"golang_web_programming/middleware"
 	"golang_web_programming/user"
 	"log"
 	"net/http"
@@ -18,7 +17,7 @@ type Server struct {
 	logoController       logo.Controller
 	membershipController internal.Controller
 	userController       user.Controller
-	userMiddleware       customMiddleware.Middleware
+	userMiddleware       middleware.Middleware
 }
 
 func NewDefaultServer() *Server {
@@ -30,7 +29,7 @@ func NewDefaultServer() *Server {
 		membershipController: *membershipController,
 		logoController:       *logo.NewController(),
 		userController:       *user.NewController(*user.NewService(user.DefaultSecret)),
-		userMiddleware:       *customMiddleware.NewMiddleware(*membershipRepository),
+		userMiddleware:       *middleware.NewMiddleware(*membershipRepository),
 	}
 }
 
@@ -71,12 +70,11 @@ func (s *Server) Routes(e *echo.Echo) {
 }
 
 func RouteMemberships(e *echo.Group, c internal.Controller) {
-	jwtMiddleware := middleware.JWTWithConfig(middleware.JWTConfig{Claims: &user.Claims{}, SigningKey: user.DefaultSecret})
 	e.POST("/memberships", c.Create)
-	e.PUT("/memberships/:id", c.Update,jwtMiddleware, customMiddleware.Middleware{}.ValidateMember)
-	e.GET("/memberships/:id", c.GetByID, jwtMiddleware)
-	e.GET("/memberships", c.GetList,jwtMiddleware, customMiddleware.Middleware{}.ValidateAdmin)
-	e.DELETE("/memberships/:id", c.Delete,jwtMiddleware, customMiddleware.Middleware{}.ValidateAdmin)
+	e.PUT("/memberships/:id", c.Update,middleware.JwtMiddleware(), middleware.Middleware{}.ValidateMember)
+	e.GET("/memberships/:id", c.GetByID, middleware.JwtMiddleware())
+	e.GET("/memberships", c.GetList,middleware.JwtMiddleware(), middleware.Middleware{}.ValidateAdmin)
+	e.DELETE("/memberships/:id", c.Delete,middleware.JwtMiddleware(), middleware.Middleware{}.ValidateAdmin)
 	//e.POST("/memberships", c.Create, middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 	//	TargetHeader: "X-My-Request-Header",
 	//}))

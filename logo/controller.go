@@ -27,7 +27,7 @@ func (controller Controller) Get(c echo.Context) error {
 	etag := fmt.Sprintf("%x", md5.Sum([]byte(modifiedTime.String())))
 
 	if c.Request().Header.Get("If-Not-Modified") == etag {
-		return c.String(http.StatusNotModified, url)
+		return c.NoContent(http.StatusNotModified)
 	}
 
 	c.Response().Header().Set("Etag", etag)

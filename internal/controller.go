@@ -47,7 +47,7 @@ func (controller *Controller) Update(c echo.Context) error {
 
 	request.ID = id
 
-	if err := ValidateUpdateRequest(c, request); err != nil {
+	if err := ValidateUpdateRequest(request); err != nil {
 		return err
 	}
 
@@ -95,9 +95,6 @@ func (controller *Controller) GetList(c echo.Context) error {
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
-
-
-
 
 	return c.JSON(http.StatusOK, res)
 }
