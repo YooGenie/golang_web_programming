@@ -1,8 +1,10 @@
 package internal
 
 import (
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	customErrors "golang_web_programming/errors"
+	"golang_web_programming/user"
 	"net/http"
 	"strings"
 )
@@ -64,6 +66,12 @@ func (controller *Controller) GetByID(c echo.Context) error {
 	if err != nil {
 		return echo.ErrInternalServerError
 	}
+
+	userInfo := c.Get("user").(*jwt.Token).Claims.(*user.Claims)
+	if userInfo.Name != res.UserName && !userInfo.IsAdmin {
+		return customErrors.ErrUnauthorized
+	}
+
 	return c.JSON(http.StatusOK, res)
 }
 
@@ -79,4 +87,14 @@ func (controller *Controller) Delete(c echo.Context) error {
 	}
 
 	return nil
+}
+
+func (controller *Controller) GetList(c echo.Context) error {
+
+	res, err := controller.service.GetList()
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	return c.JSON(http.StatusOK, res)
 }

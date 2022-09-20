@@ -38,8 +38,6 @@ func (r Repository) Update(member Membership) (*UpdateResponse, error) {
 }
 
 func (r Repository) Delete(id string) error {
-	r.data["3ab365ba-6707-406d-8383-548514e2ecb9"] = Membership{ID: "3ab365ba-6707-406d-8383-548514e2ecb9", UserName: "jenny", MembershipType: "toss"}
-
 	if id != r.data[id].ID {
 		return customErrors.ErrNotExistID
 	}
@@ -48,10 +46,18 @@ func (r Repository) Delete(id string) error {
 }
 
 func (r *Repository) GetById(id string) (Membership, error) {
-	r.data["3ab365ba-6707-406d-8383-548514e2ecb9"] = Membership{ID: "3ab365ba-6707-406d-8383-548514e2ecb9", UserName: "jenny", MembershipType: "toss"}
+	r.data = map[string]Membership{}
+	r.data[id] = Membership{ID: id, UserName: "kim", MembershipType: "toss"}
 
 	if r.data[id].ID != id {
 		return Membership{}, customErrors.ErrNotExistID
 	}
 	return r.data[id], nil
+}
+
+func (r *Repository) GetList() (map[string]Membership, error) {
+	r.data["3ab365ba-6707-406d-8383-548514e2ecb9"] = Membership{ID: "3ab365ba-6707-406d-8383-548514e2ecb9", UserName: "jenny", MembershipType: "toss"}
+	r.data["3ab365ba-6707-406d-8383-548514e2ecb5"] = Membership{ID: "3ab365ba-6707-406d-8383-548514e2ecb5", UserName: "jay", MembershipType: "naver"}
+
+	return r.data, nil
 }
