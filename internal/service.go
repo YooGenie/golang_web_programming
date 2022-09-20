@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 )
 
@@ -12,23 +13,44 @@ func NewService(repository Repository) *Service {
 	return &Service{repository: repository}
 }
 
-func (s *Service) Create(request CreateRequest) (CreateResponse, error) {
+func (s *Service) Create(request *CreateRequest) (*CreateResponse, error) {
 	membership := Membership{uuid.New().String(), request.UserName, request.MembershipType}
-	s.repository.Create(membership)
-	return CreateResponse{
-		ID:             membership.ID,
-		MembershipType: membership.MembershipType,
-	}, nil
+	createResponse, err := s.repository.Create(membership)
+	if err != nil {
+		return nil, err
+	}
+	return createResponse, nil
 }
 
-func (s *Service) GetByID(id string) (GetResponse, error) {
+func (s *Service) Update(request *UpdateRequest) (*UpdateResponse, error) {
+	membership := Membership{request.ID, request.UserName, request.MembershipType}
+	fmt.Println("membership, ", membership)
+	updateResponse, err := s.repository.Update(membership)
+	if err != nil {
+		return nil, err
+	}
+	return updateResponse, nil
+}
+
+func (s *Service) GetByID(id string) (*GetResponse, error) {
+
 	membership, err := s.repository.GetById(id)
 	if err != nil {
-		return GetResponse{}, nil
+		return nil, err
 	}
-	return GetResponse{
+	response := GetResponse{
 		ID:             membership.ID,
 		UserName:       membership.UserName,
 		MembershipType: membership.MembershipType,
-	}, nil
+	}
+
+	return &response, nil
+}
+
+func (s *Service) Delete(id string) error {
+	err := s.repository.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

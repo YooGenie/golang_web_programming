@@ -1,54 +1,36 @@
 package main
 
-import (
- 	"fmt"
-	"strconv"
-	"strings"
-)
+/*
+NewYear() 함수가 호출되면, main 함수에서도 member의 Age가 증가해야 합니다.
+NewSalary() 함수는 일시적으로 salary가 증가한 것이기 때문에, main 함수에서는 Salary의 값이 바뀌면 안됩니다.
+힌트:
+Pointer Receiver, Value Receiver
+*/
+
+import "fmt"
 
 type Member struct {
+	Name   string
 	Age    int
 	Salary int
 }
 
-func (member *Member)  NextYearAge() {
+func (member *Member) NewYear() {
 	member.Age++
 }
 
-func (member Member) BonusSalary() {
+func (member Member) NewSalary() {
 	member.Salary += 10000
-	fmt.Println(fmt.Sprintf("보너스가 있을 때, salary : %d", member.Salary))
+	fmt.Println(fmt.Sprintf("%s의 이번 달 salary : %d", member.Name, member.Salary))
 }
 
 func main() {
-	age, salary := getInput()
-	member := Member{age, salary}
+	member := Member{"Ann", 29, 10000}
 
-	fmt.Println(fmt.Sprintf("2022년 12월일 때, 나이 : %d", member.Age))
-	member.NextYearAge()
-	fmt.Println(fmt.Sprintf("2023년 1월일 때, 나이 : %d", member.Age))
+	fmt.Println(fmt.Sprintf("%s의 나이 : %d", member.Name, member.Age))
+	member.NewYear()
+	fmt.Println(fmt.Sprintf("새해가 된 후, %s의 나이 : %d", member.Name, member.Age))
 
-	member.BonusSalary()
-	fmt.Println(fmt.Sprintf("일반적인 salary : %d", member.Salary))
+	member.NewSalary()
+	fmt.Println(fmt.Sprintf("%s의 기존 salary : %d", member.Name, member.Salary))
 }
-
-func getInput() (int, int) {
-	var input string
-	_, err := fmt.Scanln(&input)
-	if err != nil {
-		panic(err)
-	}
-
-  	inputs := strings.Split(input, ",")
-	age, err := strconv.Atoi(inputs[0])
-	if err != nil {
-		panic(err)
-	}
-	salary, err := strconv.Atoi(inputs[1])
-	if err != nil {
-		panic(err)
-	}
-	return age, salary
-}
-
-
