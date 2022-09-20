@@ -14,3 +14,4 @@ var (
 	ErrInputUserName         = errors.New("사용자 이름을 입력해주세요")
 	ErrUnauthorized          = errors.New("인증되지 않았습니다")
 )
+
