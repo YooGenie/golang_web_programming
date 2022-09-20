@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"log"
 	"net/http"
-	log "github.com/sirupsen/logrus"
 )
 
 const _defaultPort = 8080
@@ -25,12 +25,27 @@ func NewDefaultServer() *Server {
 
 func (s *Server) Run() {
 	e := echo.New()
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "RequestHttpMethod=${method}\nRequestURI=${uri}\nResponseHttpStatusCode=${status}\n",
+	}))
 	e.Use(middleware.BodyDump(func(c echo.Context, reqBody, resBody []byte) {
-		log.Printf("RequestHttpMethod=%s, RequestURI=%s, ResponseHttpStatusCode=%d", c.Request().Method,c.Request().RequestURI, c.Response().Status)
 		log.Println("RequestBody="+ string(reqBody))
 		log.Println("ResponseBody="+  string(resBody))
 	}))
 
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		if err != nil {
+			c.JSON(http.StatusBadRequest, "message : " + err.Error())
+		}
+		if echoErr, ok := err.(*echo.HTTPError); ok {
+			if echoErr.Code == http.StatusInternalServerError {
+				log.Print("Internal Server Error")
+
+			}
+		}
+
+		e.DefaultHTTPErrorHandler(err, c)
+	}
 
 	e.GET("/", func(c echo.Context) error { return c.NoContent(http.StatusOK) })
 	s.Routes(e)
@@ -42,10 +57,10 @@ func (s *Server) Routes(e *echo.Echo) {
 	RouteMemberships(g, s.controller)
 }
 
-func RouteMemberships(e *echo.Group, c Application) {
+func RouteMemberships(e *echo.Group, c Controller) {
 	e.POST("/memberships", c.Create)
 	e.PUT("/memberships/:id", c.Update)
-	e.GET("/memberships/:id", c.Get)
+	e.GET("/memberships/:id", c.GetByID)
 	e.DELETE("/memberships/:id", c.Delete)
 	//e.POST("/memberships", c.Create, middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 	//	TargetHeader: "X-My-Request-Header",
