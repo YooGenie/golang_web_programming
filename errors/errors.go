@@ -11,3 +11,4 @@ var (
 	ErrInputMembershipType = errors.New("멤버십 타입을 입력해주세요")
 	ErrInputUserName = errors.New("사용자 이름을 입력해주세요")
 )
+
