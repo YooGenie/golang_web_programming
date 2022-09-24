@@ -1,4 +1,4 @@
-package internal
+package member
 
 import (
 	customErrors "golang_web_programming/errors"
@@ -12,29 +12,32 @@ func NewRepository(data map[string]Membership) *Repository {
 	return &Repository{data: data}
 }
 
-func (r Repository) Create(member Membership) (*CreateResponse, error) {
+func (r Repository) Create(membership Membership) (*CreateResponse, error) {
+	r.data[membership.ID] = membership
 
 	for _, v := range r.data {
-		if v.UserName == member.UserName {
+		if v.UserName == membership.UserName {
 			return nil, customErrors.ErrExistUserName
 		}
 	}
 
-	r.data[member.ID] = member
+	r.data[membership.ID] = membership
 
-	return &CreateResponse{r.data[member.ID].ID, r.data[member.ID].MembershipType}, nil
+	return &CreateResponse{r.data[membership.ID].ID, r.data[membership.ID].UserName,r.data[membership.ID].MembershipType}, nil
 }
 
-func (r Repository) Update(member Membership) (*UpdateResponse, error) {
+func (r Repository) Update(membership Membership) (*UpdateResponse, error) {
+	//r.data[membership.ID] = membership
+
 	for _, v := range r.data {
-		if v.UserName == member.UserName {
+		if v.UserName == membership.UserName {
 			return nil, customErrors.ErrExistUserName
 		}
 	}
 
-	r.data[member.ID] = member
+	r.data[membership.ID] = membership
 
-	return &UpdateResponse{member.ID, member.UserName, member.MembershipType}, nil
+	return &UpdateResponse{membership.ID, membership.UserName, membership.MembershipType}, nil
 }
 
 func (r Repository) Delete(id string) error {
