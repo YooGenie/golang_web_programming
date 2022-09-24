@@ -1,0 +1,100 @@
+definitions:
+  memberships.CreateRequest:
+    properties:
+      membership_type:
+        example: toss
+        type: string
+      user_name:
+        example: andy
+        type: string
+    type: object
+  memberships.CreateResponse:
+    properties:
+      id:
+        example: 354660dc-f798-11ec-b939-0242ac120002
+        type: string
+      membership_type:
+        example: toss
+        type: string
+      user_name:
+        example: andy
+        type: string
+    type: object
+  memberships.Fail400GetResponse:
+    properties:
+      message:
+        example: Bad Request
+        type: string
+    type: object
+  memberships.GetResponse:
+    properties:
+      id:
+        example: 354660dc-f798-11ec-b939-0242ac120002
+        type: string
+      membership_type:
+        example: toss
+        type: string
+      user_name:
+        example: andy
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: { }
+  title: Membership API
+  version: "1.0"
+paths:
+  /memberships/{id}:
+    get:
+      consumes:
+        - application/json
+      description: 멤버십 정보를 조회합니다. (상세 설명)
+      parameters:
+        - default: Bearer <Add access token here>
+          description: Authorization
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Membership uuid
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memberships.GetResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/memberships.Fail400GetResponse'
+      summary: 멤버십 정보 단건 조회
+      tags:
+        - Memberships
+  /v1/memberships:
+    post:
+      consumes:
+        - application/json
+      description: 멤버십을 생성합니다.
+      parameters:
+        - description: user_name:사용자의 이름, membership_type:naver,toss,pacyco 중 하나
+          in: body
+          name: requestBody
+          required: true
+          schema:
+            $ref: '#/definitions/memberships.CreateRequest'
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/memberships.CreateResponse'
+      summary: 멤버십 생성
+      tags:
+        - Memberships
+swagger: "2.0"

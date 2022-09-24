@@ -1,4 +1,4 @@
-package internal
+package member
 
 import (
 	"github.com/google/uuid"
@@ -75,7 +75,7 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("멤버십 아이디를 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
-		app := NewApplication(Service{repository:*NewRepository(map[string]Membership{"data": {"1", "jenny", "naver"}})})
+		app := NewApplication(Service{repository: *NewRepository(map[string]Membership{"data": {"1", "jenny", "naver"}})})
 		req := UpdateRequest{"", "genie", "naver"}
 		res, err := app.Update(req)
 		assert.Empty(t, res)
@@ -111,7 +111,7 @@ func TestUpdate(t *testing.T) {
 func TestDelete(t *testing.T) {
 	t.Run("멤버십을 삭제한다.", func(t *testing.T) {
 		id := uuid.New().String()
-		app := NewApplication(Service{repository:*NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
+		app := NewApplication(Service{repository: *NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
 		params := id
 		err := app.Delete(params)
 		assert.Nil(t, err)
@@ -119,7 +119,7 @@ func TestDelete(t *testing.T) {
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
 		id := uuid.New().String()
-		app := NewApplication(Service{repository:*NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
+		app := NewApplication(Service{repository: *NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
 		params := ""
 		err := app.Delete(params)
 		assert.EqualError(t, err, "삭제할 멤버십 아이디가 유효하지 않습니다")
@@ -127,7 +127,7 @@ func TestDelete(t *testing.T) {
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
 		id := uuid.New().String()
-		app := NewApplication(Service{repository:*NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
+		app := NewApplication(Service{repository: *NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
 		params := uuid.New().String()
 		err := app.Delete(params)
 		assert.EqualError(t, err, "입력한 id가 존재하지 않습니다")
@@ -137,7 +137,7 @@ func TestDelete(t *testing.T) {
 func TestGet(t *testing.T) {
 	t.Run("멤버십을 조회한다", func(t *testing.T) {
 		id := uuid.New().String()
-		app := NewApplication(Service{repository:*NewRepository(map[string]Membership{id: {id, "jenny", "toss"}})})
+		app := NewApplication(Service{repository: *NewRepository(map[string]Membership{id: {id, "jenny", "toss"}})})
 		params := id
 		res, err := app.Get(params)
 		assert.Nil(t, err)
@@ -149,7 +149,7 @@ func TestGet(t *testing.T) {
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
 		id := uuid.New().String()
-		app := NewApplication(Service{repository:*NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
+		app := NewApplication(Service{repository: *NewRepository(map[string]Membership{id: {id, "jenny", "naver"}})})
 		params := uuid.New().String()
 		res, err := app.Get(params)
 		assert.Empty(t, res)

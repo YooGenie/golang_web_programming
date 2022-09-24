@@ -1,7 +1,7 @@
 package user
 
 import (
-"errors"
+	"errors"
 "github.com/golang-jwt/jwt"
 )
 

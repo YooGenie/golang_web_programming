@@ -1,4 +1,4 @@
-package internal
+package member
 
 type Membership struct {
 	ID             string

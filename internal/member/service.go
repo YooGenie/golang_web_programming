@@ -1,7 +1,8 @@
-package internal
+package member
 
 import (
 	"github.com/google/uuid"
+	"errors"
 )
 
 type Service struct {
@@ -11,6 +12,10 @@ type Service struct {
 func NewService(repository Repository) *Service {
 	return &Service{repository: repository}
 }
+
+var (
+	ErrEmptyID = errors.New("empty id")
+)
 
 func (s *Service) Create(request *CreateRequest) (*CreateResponse, error) {
 	membership := Membership{uuid.New().String(), request.UserName, request.MembershipType}
@@ -52,6 +57,23 @@ func (s *Service) Delete(id string) error {
 	}
 	return nil
 }
+
+//func (s *Service) Delete(id string) error {
+//	if id == "" {
+//		return ErrEmptyID
+//	}
+//	_, err := s.repository.GetById(id)
+//	if err != nil {
+//		return err
+//	}
+//	s.repository.DeleteById(id)
+//
+//	for _, d := range s.repository.data {
+//		fmt.Println(d)
+//	}
+//	return nil
+//}
+
 
 func (s *Service) GetList() (*[]GetResponse, error) {
 	members, err := s.repository.GetList()

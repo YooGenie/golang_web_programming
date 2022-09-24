@@ -5,14 +5,14 @@ import (
 	"github.com/gavv/httpexpect"
 	"github.com/labstack/echo/v4"
 	"golang_web_programming/internal"
-	"golang_web_programming/server"
+	"golang_web_programming/internal/member"
 	"net/http"
 	"testing"
 )
 
 func TestTossRecreate(t *testing.T) {
 	echoServer := echo.New()
-	server.NewDefaultServer().Routes(echoServer)
+	internal.NewDefaultServer().Routes(echoServer)
 
 	e := httpexpect.WithConfig(httpexpect.Config{
 		Client: &http.Client{
@@ -28,7 +28,7 @@ func TestTossRecreate(t *testing.T) {
 	t.Run("토스 멤버십을 신청한 후 삭제했다면, 다시 신청할 수 없다.", func(t *testing.T) {
 		// given: 토스 멤버십을 신청한다.
 		membershipCreateRequest := e.POST("/v1/memberships").
-			WithJSON(internal.CreateRequest{
+			WithJSON(member.CreateRequest{
 				UserName:       "andy",
 				MembershipType: "toss",
 			}).
@@ -51,7 +51,7 @@ func TestTossRecreate(t *testing.T) {
 
 		// then: 토스 멤버십을 다시 신청할 수 없다. 멤버십의 상태가 "탈퇴한 회원"이다.
 		e.POST("/v1/memberships").
-			WithJSON(internal.CreateRequest{
+			WithJSON(member.CreateRequest{
 				UserName:       "andy",
 				MembershipType: "toss",
 			}).
@@ -64,7 +64,7 @@ func TestTossRecreate(t *testing.T) {
 	t.Run("", func(t *testing.T) {
 		// given: - 멤버십을 발급 받는다.
 		membershipCreateRequest := e.POST("/v1/memberships").
-			WithJSON(internal.CreateRequest{
+			WithJSON(member.CreateRequest{
 				UserName:       "jay",
 				MembershipType: "toss",
 			}).
@@ -84,7 +84,7 @@ func TestTossRecreate(t *testing.T) {
 		e.GET(fmt.Sprintf("/v1/memberships/%s", id)).
 			WithHeader("authorization", fmt.Sprintf("bearer %s", token.Value("token").Raw())).
 			Expect().
-			Status(http.StatusOK).JSON().Equal(internal.GetResponse{
+			Status(http.StatusOK).JSON().Equal(member.GetResponse{
 			ID:             id.(string),
 			UserName:       "jay",
 			MembershipType: "toss",
@@ -94,7 +94,7 @@ func TestTossRecreate(t *testing.T) {
 	t.Run("멤버십의 주인만 멤버십을 조회할 수 있다", func(t *testing.T) {
 		//Given: 멤버십을 생성한다
 		membershipCreateRequest := e.POST("/v1/memberships").
-			WithJSON(internal.CreateRequest{
+			WithJSON(member.CreateRequest{
 				UserName:       "kim",
 				MembershipType: "toss",
 			}).
@@ -117,7 +117,7 @@ func TestTossRecreate(t *testing.T) {
 			WithHeader("authorization", fmt.Sprintf("bearer %s", token.Value("token").Raw())).
 			Expect().
 			Status(http.StatusOK).
-			JSON().Object().Equal(internal.GetResponse{
+			JSON().Object().Equal(member.GetResponse{
 			ID:             id.(string),
 			UserName:       "kim",
 			MembershipType: "toss",
@@ -127,7 +127,7 @@ func TestTossRecreate(t *testing.T) {
 	t.Run("Admin 사용자는 멤버십 전체 조회를 할 수 있다", func(t *testing.T) {
 		//Given: 생성된 멤버십이 존재한다
 		e.POST("/v1/memberships").
-			WithJSON(internal.CreateRequest{
+			WithJSON(member.CreateRequest{
 				UserName:       "yona",
 				MembershipType: "toss",
 			}).
@@ -154,7 +154,7 @@ func TestTossRecreate(t *testing.T) {
 	t.Run("멤버십의 주인만 멤버십을 수정할 수 있다", func(t *testing.T) {
 		//Given: 멤버십을 생성한다
 		membershipCreateRequest := e.POST("/v1/memberships").
-			WithJSON(internal.CreateRequest{
+			WithJSON(member.CreateRequest{
 				UserName:       "kim",
 				MembershipType: "toss",
 			}).
@@ -174,7 +174,7 @@ func TestTossRecreate(t *testing.T) {
 
 		// then: 자기 멤버쉽을 수정할 수 있다.
 		membershipUpdateRequest := e.PUT(fmt.Sprintf("/v1/memberships/%s", id)).
-			WithJSON(internal.UpdateRequest{
+			WithJSON(member.UpdateRequest{
 				ID:             id.(string),
 				UserName:       "kim",
 				MembershipType: "toss",
@@ -182,7 +182,7 @@ func TestTossRecreate(t *testing.T) {
 			WithHeader("authorization", fmt.Sprintf("bearer %s", token.Value("token").Raw())).
 			Expect().
 			Status(http.StatusCreated).
-			JSON().Object().Equal(internal.GetResponse{
+			JSON().Object().Equal(member.GetResponse{
 			ID:             id.(string),
 			UserName:       "kim",
 			MembershipType: "toss",
