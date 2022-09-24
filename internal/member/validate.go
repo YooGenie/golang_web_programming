@@ -1,4 +1,4 @@
-package internal
+package member
 
 import (
 	customErrors "golang_web_programming/errors"

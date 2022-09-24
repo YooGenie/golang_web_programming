@@ -1,11 +1,11 @@
 package main
 
 import (
-	"golang_web_programming/server"
+	"golang_web_programming/internal"
 )
 
 func main() {
-	server := server.NewDefaultServer()
+	server := internal.NewDefaultServer()
 	server.Run()
 
 	//e:= echo.New()

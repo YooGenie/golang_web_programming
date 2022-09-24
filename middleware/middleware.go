@@ -5,15 +5,15 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	customErrors "golang_web_programming/errors"
-	"golang_web_programming/internal"
-	"golang_web_programming/user"
+	"golang_web_programming/internal/member"
+	"golang_web_programming/internal/user"
 )
 
 type Middleware struct {
-	membershipRepository internal.Repository
+	membershipRepository member.Repository
 }
 
-func NewMiddleware(membershipRepository internal.Repository) *Middleware {
+func NewMiddleware(membershipRepository member.Repository) *Middleware {
 	return &Middleware{membershipRepository: membershipRepository}
 }
 
@@ -41,7 +41,7 @@ func (m Middleware) ValidateMember(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		id := c.Param("id")
-		service := internal.Service{}
+		service := member.Service{}
 		membership, _ := service.GetByID(id)
 		if claims.Name != membership.UserName {
 			return customErrors.ErrUnauthorized
