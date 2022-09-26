@@ -47,7 +47,7 @@ func TestPractice(t *testing.T) {
 		actual, err := divide(10, 2)
 
 		assert.Nil(t, err)
-		assert.Equal(t, 5, actual)
+		assert.EqualValues(t, 5, actual)
 		//TODO err가 발생하지 않았음을 검증해주세요.
 		//TODO 결과로 나온 숫자가 5가 맞는지 검증해주세요.
 
@@ -59,7 +59,7 @@ func TestPractice(t *testing.T) {
 		//TODO errDivisorZero가 맞는지 검증해주세요.
 		assert.ErrorIs(t, err, errDivisorZero)
 		//TODO actual의 값을 검증해주세요.
-		assert.Zero(t, 0, actual)
+		assert.Zero(t, actual)
 
 	})
 
