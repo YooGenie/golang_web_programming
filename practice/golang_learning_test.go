@@ -13,7 +13,8 @@ import (
 func TestGolang(t *testing.T) {
 	t.Run("string test", func(t *testing.T) {
 		str := "Ann,Jenny,Tom,Zico"
-		actual := strings.Split(str, ",") // TODO str을 , 단위로 잘라주세요.
+		// TODO str을 , 단위로 잘라주세요.
+		actual := strings.Split(str, ",")
 		expected := []string{"Ann", "Jenny", "Tom", "Zico"}
 
 		//TODO assert 문을 활용해 actual과 expected를 비교해주세요.
@@ -104,7 +105,6 @@ func TestGolang(t *testing.T) {
 			endTime = time.Now()
 			break
 		}
-
 		assert.True(t, endTime.After(startTime.Add(add)))
 	})
 
