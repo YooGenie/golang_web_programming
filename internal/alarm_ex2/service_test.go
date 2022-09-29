@@ -67,6 +67,17 @@ func TestService(t *testing.T) {
 			응답: Code: http.InternalServerError, Message: http.StatusText(http.InternalServerError)
 			에러가 SMSFailErr이고, client를 1번 call했다는 것을 검증한다.
 		*/
+		maxRetry := 3
+		client := NewMockSMSClient()
+		service := Service{client, maxRetry}
+
+		receiver := "01000000000"
+		client.On("Send", newSuccessSMSRequest(receiver)).
+			Return(SMSResponse{http.StatusInternalServerError, "http.StatusText(http.InternalServerError"}, nil).Once()
+
+		err := service.Send(context.Background(), receiver)
+		assert.ErrorIs(t, err, ErrSMSFail)
+		client.AssertNumberOfCalls(t, "Send", 1)
 	})
 }
 
@@ -108,5 +119,20 @@ func TestServiceWithContext(t *testing.T) {
 			client가 재시도하려는 시점에 context가 Timeout되었다는 것을 알게 되고 에러를 리턴한다.
 			service에서 리턴한 에러가 context에서 발생한 에러임을 검증한다.
 		*/
+		maxRetry := 3
+		client := NewMockSMSClient()
+		service := Service{client, maxRetry}
+		receiver := "01000000000"
+
+		ctx, timeout := context.WithTimeout(context.Background(), 500)
+
+		client.On("Send", newSuccessSMSRequest(receiver)).
+			Return(SMSResponse{http.StatusTooManyRequests, "http.StatusText(http.TooManyRequest)"}, nil).After(1000).
+			Run(func(args mock.Arguments) {
+				timeout()
+			})
+
+		err := service.Send(ctx, receiver)
+		assert.ErrorIs(t, err, context.DeadlineExceeded)
 	})
 }
