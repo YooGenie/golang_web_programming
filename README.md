@@ -14,6 +14,7 @@
   - Git Practice
   - 미니 어플리케이션 구현 및 테스트
 <br>
+
 ## 2주차
 1) Restful API
 2) Web Framework
@@ -22,6 +23,12 @@
   - Echo.Context
   - Error Handler
   -Middleware
+3) 과제
+  - REST API를 구현
+  - Echo 미들웨어 기능을 사용해서 로깅하기  
+<br>
+
 ## 3주차
+1) 인수 테스트
 
 ## 4주차
