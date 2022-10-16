@@ -13,7 +13,7 @@ func NewRepository(data map[string]Membership) *Repository {
 }
 
 func (r Repository) Create(membership Membership) (*CreateResponse, error) {
-	r.data[membership.ID] = membership
+	//r.data[membership.ID] = membership
 
 	for _, v := range r.data {
 		if v.UserName == membership.UserName {
@@ -23,7 +23,7 @@ func (r Repository) Create(membership Membership) (*CreateResponse, error) {
 
 	r.data[membership.ID] = membership
 
-	return &CreateResponse{r.data[membership.ID].ID, r.data[membership.ID].UserName,r.data[membership.ID].MembershipType}, nil
+	return &CreateResponse{r.data[membership.ID].ID, r.data[membership.ID].UserName, r.data[membership.ID].MembershipType}, nil
 }
 
 func (r Repository) Update(membership Membership) (*UpdateResponse, error) {

@@ -27,14 +27,14 @@ func TestTossRecreate(t *testing.T) {
 
 	t.Run("토스 멤버십을 신청한 후 삭제했다면, 다시 신청할 수 없다.", func(t *testing.T) {
 		// given: 토스 멤버십을 신청한다.
-		membershipCreateRequest := e.POST("/v1/memberships").
-			WithJSON(member.CreateRequest{
+		membershipCreateRequest := e.POST("/v1/memberships"). // POST /v1/memberships
+									WithJSON(member.CreateRequest{ //json 타입으로 보낸다. => Content-Type: application/json
 				UserName:       "andy",
 				MembershipType: "toss",
-			}).
-			Expect().
-			Status(http.StatusCreated).
-			JSON().Object()
+			}).                         // 바디값
+			Expect().                   //여기 이후는 검증하는 것
+			Status(http.StatusCreated). // 만약 베드리퀘스트로 오면 테스트는 실패
+			JSON().Object()             //response 값을 json 포맷으로 바꿔준다.
 
 		// when: 토스 멤버십을 삭제한다.
 		token := e.POST("/v1/login").
@@ -45,9 +45,12 @@ func TestTossRecreate(t *testing.T) {
 			JSON().Object()
 
 		e.DELETE(fmt.Sprintf("/v1/memberships/%s", membershipCreateRequest.Value("id").Raw())).
+			//Value("id").Raw()는 스트럭스값이 아니라 json key값으로 가져온다.
+			//.Row() => string으로 나온다.
+			// DELETE /v1/memberships/:id 똑같이 보내진다
 			WithHeader("authorization", fmt.Sprintf("bearer %s", token.Raw()["token"])).
-			Expect().
-			Status(http.StatusOK)
+			Expect().             //검증 부분
+			Status(http.StatusOK) //OK말고 다른게 오면 테스트 코드 실패이다
 
 		// then: 토스 멤버십을 다시 신청할 수 없다. 멤버십의 상태가 "탈퇴한 회원"이다.
 		e.POST("/v1/memberships").
@@ -59,6 +62,7 @@ func TestTossRecreate(t *testing.T) {
 			Status(http.StatusInternalServerError).
 			JSON().Object().
 			Value("message").Equal("Internal Server Error")
+		//JSON 키에 메시지 값에 "Internal Server Error" 적는다
 	})
 
 	t.Run("", func(t *testing.T) {
@@ -84,11 +88,12 @@ func TestTossRecreate(t *testing.T) {
 		e.GET(fmt.Sprintf("/v1/memberships/%s", id)).
 			WithHeader("authorization", fmt.Sprintf("bearer %s", token.Value("token").Raw())).
 			Expect().
-			Status(http.StatusOK).JSON().Equal(member.GetResponse{
-			ID:             id.(string),
-			UserName:       "jay",
-			MembershipType: "toss",
-		})
+			Status(http.StatusOK).JSON().
+			Equal(member.GetResponse{ //value 값을 비교한다.
+				ID:             id.(string),
+				UserName:       "jay",
+				MembershipType: "toss",
+			})
 	})
 
 	t.Run("멤버십의 주인만 멤버십을 조회할 수 있다", func(t *testing.T) {
