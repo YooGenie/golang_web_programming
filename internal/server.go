@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/labstack/echo/v4"
+	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	customErrors "golang_web_programming/errors"
 	"golang_web_programming/internal/logo"
@@ -82,14 +83,17 @@ func (s *Server) Routes(e *echo.Echo) {
 }
 
 func RouteMemberships(e *echo.Group, c member.Controller) {
-	e.POST("/memberships", c.Create)
+	//e.POST("/memberships", c.Create)
 	e.PUT("/memberships/:id", c.Update, middleware.JwtMiddleware(), middleware.Middleware{}.ValidateMember)
 	e.GET("/memberships/:id", c.GetByID, middleware.JwtMiddleware())
 	e.GET("/memberships", c.GetList, middleware.JwtMiddleware(), middleware.Middleware{}.ValidateAdmin)
 	e.DELETE("/memberships/:id", c.Delete, middleware.JwtMiddleware(), middleware.Middleware{}.ValidateAdmin)
-	//e.POST("/memberships", c.Create, middleware.RequestIDWithConfig(middleware.RequestIDConfig{
-	//	TargetHeader: "X-My-Request-Header",
-	//}))
+	e.POST("/memberships", c.Create, echoMiddleware.RequestIDWithConfig(echoMiddleware.RequestIDConfig{
+		//Skipper: 스킵을 할지
+		//Generator: 리퀘스트아이디를 어떻게 만들건지?
+		// RequestIDHandler: //리퀘스트 아이디를 조작할 때 사용
+		TargetHeader: "X-My-Request-Header", //리퀘스트 헤더 이름 정하기
+	}))
 }
 
 func RouteLogo(e *echo.Group, c logo.Controller) {
