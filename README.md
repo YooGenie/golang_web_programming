@@ -15,5 +15,13 @@
   - 미니 어플리케이션 구현 및 테스트
 <br>
 ## 2주차
+1) Restful API
+2) Web Framework
+  - Echo 웹 프레임워크
+  - Router
+  - Echo.Context
+  - Error Handler
+  -Middleware
 ## 3주차
+
 ## 4주차
