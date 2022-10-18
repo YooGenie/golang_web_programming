@@ -2,7 +2,7 @@ package user
 
 import (
 	"errors"
-"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt"
 )
 
 var (
@@ -37,5 +37,6 @@ func (s Service) Login(name, password string) (LoginResponse, error) {
 
 func (s Service) createToken(claims Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(s.secret)
+	// 클레임: 키+벨류 => 페이로드
+	return token.SignedString(s.secret) //시크릿값과 함께 토큰 값을 만들어 준다.
 }

@@ -85,6 +85,7 @@ func (s *Server) Routes(e *echo.Echo) {
 func RouteMemberships(e *echo.Group, c member.Controller) {
 	//e.POST("/memberships", c.Create)
 	e.PUT("/memberships/:id", c.Update, middleware.JwtMiddleware(), middleware.Middleware{}.ValidateMember)
+	// 업데이트는 그 멤버만 가능하다. => 이걸 에코 미들웨어에서 만들어서
 	e.GET("/memberships/:id", c.GetByID, middleware.JwtMiddleware())
 	e.GET("/memberships", c.GetList, middleware.JwtMiddleware(), middleware.Middleware{}.ValidateAdmin)
 	e.DELETE("/memberships/:id", c.Delete, middleware.JwtMiddleware(), middleware.Middleware{}.ValidateAdmin)
