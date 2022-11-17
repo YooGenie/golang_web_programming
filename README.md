@@ -30,5 +30,18 @@
 
 ## 3주차
 1) 인수 테스트
+2) 인증/인가
+  - JWT를 사용한 인증
+3) 캐싱
+- ETag를 활용한 캐싱 처리
+4) 과제
+- JWT Token 적용하기
+- ETag 캐싱 처리하기
 
 ## 4주차
+
+1) Mocking을 활용한 테스트
+2) API 문서화
+- Swagger 소개
+- Swagger 적용 방법
+3) Graceful Shutdown
