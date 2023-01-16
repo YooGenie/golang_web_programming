@@ -11,9 +11,10 @@ import (
 )
 
 func TestTossRecreate(t *testing.T) {
-	echoServer := echo.New()
-	internal.NewDefaultServer().Routes(echoServer)
+	echoServer := echo.New()                       //테스트코드에 에코를 만든다
+	internal.NewDefaultServer().Routes(echoServer) //라우터를 만든다.
 
+	// 실제 환경을 구성한다
 	e := httpexpect.WithConfig(httpexpect.Config{
 		Client: &http.Client{
 			Transport: httpexpect.NewBinder(echoServer),
@@ -33,8 +34,8 @@ func TestTossRecreate(t *testing.T) {
 				MembershipType: "toss",
 			}).                         // 바디값
 			Expect().                   //여기 이후는 검증하는 것
-			Status(http.StatusCreated). // 만약 베드리퀘스트로 오면 테스트는 실패
-			JSON().Object()             //response 값을 json 포맷으로 바꿔준다.
+			Status(http.StatusCreated). // 만약 베드리퀘스트로 오면 테스트는 실패 => Response Status Code가 Created가 아니면 에러 발생
+			JSON().Object()             //response 값을 json 포맷으로 바꿔준다. =>Response Body를 JSON 포맷으로 가져온다.
 
 		// when: 토스 멤버십을 삭제한다.
 		token := e.POST("/v1/login").
@@ -44,7 +45,8 @@ func TestTossRecreate(t *testing.T) {
 			Status(http.StatusOK).
 			JSON().Object()
 
-		e.DELETE(fmt.Sprintf("/v1/memberships/%s", membershipCreateRequest.Value("id").Raw())).
+		// DELETE /v1/memberships/:id 로 요청을 보냈을 때, Response Status Code가 OK면 패스
+		e.DELETE(fmt.Sprintf("/v1/memberships/%s", membershipCreateRequest.Value("id").Raw())). //JSON Key 값으로 값 가져오기
 			//Value("id").Raw()는 스트럭스값이 아니라 json key값으로 가져온다.
 			//.Row() => string으로 나온다.
 			// DELETE /v1/memberships/:id 똑같이 보내진다
@@ -55,12 +57,12 @@ func TestTossRecreate(t *testing.T) {
 		// then: 토스 멤버십을 다시 신청할 수 없다. 멤버십의 상태가 "탈퇴한 회원"이다.
 		e.POST("/v1/memberships").
 			WithJSON(member.CreateRequest{
-				UserName:       "andy",
+				UserName:       "andy", //위에 있는 조건과 똑같음
 				MembershipType: "toss",
 			}).
 			Expect().
-			Status(http.StatusInternalServerError).
-			JSON().Object().
+			Status(http.StatusInternalServerError). //Response Status Code가 BadRequest가 아니면 에러 발생
+			JSON().Object().                        //Response Body를 JSON 포맷으로 가져와, JSON Key: Message에 해당하는 값 검증
 			Value("message").Equal("Internal Server Error")
 		//JSON 키에 메시지 값에 "Internal Server Error" 적는다
 	})
