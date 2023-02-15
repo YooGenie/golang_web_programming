@@ -9,9 +9,12 @@ import (
 type MockSMSClient1 struct {
 }
 
+// 가짜 스크럽트
 func NewMockSMSClient1() *MockSMSClient1 {
 	return &MockSMSClient1{}
 }
+
+// send를 하면 무조건 ok가 나올 수 있도록 실제 성공처럼 만들어 준다.
 
 func (m MockSMSClient1) Send(request SMSRequest) (SMSResponse, error) {
 	return SMSResponse{
