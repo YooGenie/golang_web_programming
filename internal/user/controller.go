@@ -13,6 +13,7 @@ func NewController(service Service) *Controller {
 	return &Controller{service: service}
 }
 
+// Mock 예시
 func (controller Controller) Login(c echo.Context) error {
 	name := c.FormValue("name")
 	password := c.FormValue("password")
