@@ -1,4 +1,5 @@
-# Golang, 협업, 그리고 테스트 코드
+# Golang 테스트 코드와 협업 기술로 백엔드 개발 역량 레벨업 하기
+2022년 08월 21일 ~ 2022년 09월 18일
 
 ## 1주차
 1) Golang 주요 패턴 익히기 => channel, goroutine, context
